@@ -4,29 +4,32 @@ version: '3.8'
 services:
 
   # Nginx Service
-  nginx:
-    image: nginx:1.21
-    ports:
-      - 80:80
-    volumes:
-      - ./src:/var/www/php
-      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
-    depends_on:
-      - php
+  # nginx:
+  #   image: nginx:1.21
+  #   ports:
+  #     - 80:80
+  #   volumes:
+  #     - ./src:/var/www/php
+  #     - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+  #   depends_on:
+  #     - php
 
   # PHP Service
-  php:
-    build: ./.docker/php
-    working_dir: /var/www/php
-    volumes:
-      - ./src:/var/www/php
-    depends_on:
-      mysql:
-        condition: service_healthy
+  # php:
+  #   build: ./.docker/php
+  #   working_dir: /var/www/php
+  #   volumes:
+  #     - ./src:/var/www/php
+  #   depends_on:
+  #     mysql:
+  #       condition: service_healthy
+  #   ports: [9000:9000]
 
   # MySQL Service
   mysql:
     image: mysql/mysql-server:8.0
+    ports:
+      - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_ROOT_HOST: "%"
