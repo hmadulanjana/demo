@@ -1,39 +1,46 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Hello there</title>
-        <style>
-            body {
-                font-family: "Arial", sans-serif;
-                font-size: larger;
-            }
+<?php
+include 'functions.php';
+// Connect to MySQL using the below function
+$pdo = pdo_connect_mysql();
+// MySQL query that retrieves  all the tickets from the databse
+$stmt = $pdo->prepare('SELECT * FROM tickets ORDER BY created DESC');
+$stmt->execute();
+$tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 
-            .center {
-                display: block;
-                margin-left: auto;
-                margin-right: auto;
-                width: 50%;
-            }
-        </style>
-    </head>
-    <body>
-        <img src="https://tech.osteel.me/images/2020/03/04/hello.gif" alt="Hello there" class="center">
-        <?php
-        $connection = new PDO('mysql:host=mysql;dbname=demo;charset=utf8', 'root', 'root');
-        $query      = $connection->query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'demo'");
-        $tables     = $query->fetchAll(PDO::FETCH_COLUMN);
+<?=template_header('Tickets')?>
 
-        if (empty($tables)) {
-            echo '<p class="center">There are no tables in database <code>demo</code>.</p>';
-        } else {
-            echo '<p class="center">Database <code>demo</code> contains the following tables:</p>';
-            echo '<ul class="center">';
-            foreach ($tables as $table) {
-                echo "<li>{$table}</li>";
-            }
-            echo '</ul>';
-        }
-        ?>
-    </body>
-</html>
+<div class="content home">
+
+	<h2>Tickets</h2>
+
+	<p>Welcome to the index page. You can view the list of tickets below.</p>
+
+	<div class="btns">
+		<a href="create.php" class="btn">Create Ticket</a>
+	</div>
+
+	<div class="tickets-list">
+		<?php foreach ($tickets as $ticket): ?>
+		<a href="view.php?id=<?=$ticket['id']?>" class="ticket">
+			<span class="con">
+				<?php if ($ticket['status'] == 'open'): ?>
+				<i class="far fa-clock fa-2x"></i>
+				<?php elseif ($ticket['status'] == 'resolved'): ?>
+				<i class="fas fa-check fa-2x"></i>
+				<?php elseif ($ticket['status'] == 'closed'): ?>
+				<i class="fas fa-times fa-2x"></i>
+				<?php endif; ?>
+			</span>
+			<span class="con">
+				<span class="title"><?=htmlspecialchars($ticket['title'], ENT_QUOTES)?></span>
+				<span class="msg"><?=htmlspecialchars($ticket['msg'], ENT_QUOTES)?></span>
+			</span>
+			<span class="con created"><?=date('F dS, G:ia', strtotime($ticket['created']))?></span>
+		</a>
+		<?php endforeach; ?>
+	</div>
+
+</div>
+
+<?=template_footer()?>
